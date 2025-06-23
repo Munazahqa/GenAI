@@ -122,5 +122,5 @@ def print_stream(stream):
         else:
             message.pretty_print()
 
-inputs = {"messages": [("user", "Add 34 + 21. Add 3+4.  Add 12+12")]}
+inputs = {"messages": [("user", "Add 34 + 21 and then multiply the result by 6. Also tell me a joke please.")]}
 print_stream(app.stream(inputs, stream_mode="values"))
