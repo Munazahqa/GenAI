@@ -64,25 +64,38 @@ class AgentState(TypedDict):
 
 
 @tool
-def add(a: int, b: int):
-    """this is an addition ftn"""  #docstring is imp if discription is not provided, it will not work.
+def add(a: int, b:int):
+    """This is an addition function that adds 2 numbers together"""
 
-    return a + b
+    return a + b 
+@tool
+def subtract(a: int, b: int):
+    """Subtraction function"""
+    return a - b
 
+@tool
+def multiply(a: int, b: int):
+    """Multiplication function"""
+    return a * b
 
-tools = [add]
-#model = ChatOpenAI(model="gpt-4o"). bind_tools(tools)
+@tool
+def add_then_multiply(a: int, b: int, c: int):
+    """Adds a and b, then multiplies the result by c."""
+    return (a + b) * c
+
+tools = [add, subtract, multiply, add_then_multiply]
+
+#model = ChatOpenAI(model = "gpt-4o").bind_tools(tools)
 model = ChatGoogleGenerativeAI(model="models/gemini-1.5-flash"). bind_tools(tools)
 
-
-def model_call(state: AgentState)-> AgentState:
-    """call the model and return the response"""
-
-    system_prompt = SystemMessage(content="You are a helpful assistant, please answer my questions")
+def model_call(state:AgentState) -> AgentState:
+    system_prompt = SystemMessage(content=
+        "You are my AI assistant, please answer my query to the best of your ability."
+    )
     response = model.invoke([system_prompt] + state["messages"])
     return {"messages": [response]}
 
-#looping logic
+
 def should_continue(state: AgentState): 
     messages = state["messages"]
     last_message = messages[-1]
@@ -91,7 +104,7 @@ def should_continue(state: AgentState):
     else:
         return "continue"
     
-#defininh the graph
+
 graph = StateGraph(AgentState)
 graph.add_node("our_agent", model_call)
 
@@ -122,5 +135,5 @@ def print_stream(stream):
         else:
             message.pretty_print()
 
-inputs = {"messages": [("user", "Add 34 + 21 and then multiply the result by 6. Also tell me a joke please.")]}
+inputs = {"messages": [("user", "Add 40 + 12 and then multiply the result by 6. Also tell me a joke please. ")]}
 print_stream(app.stream(inputs, stream_mode="values"))
